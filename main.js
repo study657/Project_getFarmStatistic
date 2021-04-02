@@ -83,7 +83,7 @@ table.append(thead);
 let tr      = document.createElement('tr');
 thead.append(tr);
 
-let namesCols  = ['Наименование кейса', 'Кол-во кейсов с фарма', 'Цена в STEAM', 'Общее (по цене STEAM)', 'Общее (с учетом комиссии)', 'ЧП Бори(30%)', 'ЧП Насти(70%)'];
+let namesCols  = ['Наименование кейса', 'Кол-во кейсов', 'Статистика выпадения кейса', 'Цена в STEAM', 'Общее (по цене STEAM)', 'Общее (с учетом комиссии)', 'ЧП Бори(30%)', 'ЧП Насти(70%)'];
 
 for(let i = 0; i < namesCols.length; i++){
     let th  = document.createElement('th');
@@ -108,6 +108,11 @@ for(let key in cases){                                                          
     thQuantity.innerHTML            = cases[key]['quantity'];
     thQuantity.classList.add('text-center', 'cases');
     trContent.append(thQuantity);
+
+    let statisticCase               = document.createElement('th');
+    statisticCase.innerHTML            = ((100 * Number(thQuantity.innerHTML)) / getAllCases(cases)).toFixed(2) + '%';
+    statisticCase.classList.add('text-center');
+    trContent.append(statisticCase);
 
     let thPrice                     = document.createElement('th');
     thPrice.innerHTML               = cases[key]['price'] + ' руб.';
@@ -184,6 +189,15 @@ function getCases(generalCases){
     let sum = 0;
     for(let i = 0; i < generalCases.length; i++){
         sum += parseInt(generalCases[i].innerHTML);
+    }
+
+    return sum;
+};
+
+function getAllCases(cases){
+    let sum = 0;
+    for(let key in cases){
+        sum += cases[key]['quantity'];
     }
 
     return sum;
