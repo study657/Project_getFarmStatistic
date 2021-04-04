@@ -1,9 +1,24 @@
+body {
+  background-color: #e6e0d2;
+}
+
 .drops {
   display: none;
 }
 
 .table thead tr th {
   font-size: 22px;
+}
+
+.table a {
+  text-decoration: none;
+  -webkit-transition: 1s all;
+  transition: 1s all;
+}
+
+.table a:hover {
+  color: #dc0606;
+  text-shadow: 1px 1px 2px black;
 }
 
 .gn {
@@ -22,6 +37,10 @@
   color: red;
   font-size: 25px;
   font-weight: 800;
+}
+
+.max {
+  background-color: #38e638;
 }
 
 .profile {

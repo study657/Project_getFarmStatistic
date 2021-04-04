@@ -7,6 +7,7 @@ $(function () {
 });
 
 var actual_price_onBOTkeyTf2 = 132; // Актуальная цена на ключ из игры TF2 у бота в стиме
+let template_link_item = 'https://steamcommunity.com/market/listings/730/'; // Ссылка на сам предмет на торговой площадке, необходимо только после / добавить название кейса на акнглийском
 let drops = document.querySelector('.drops'); // Получили наш div из index.html с классом drops
 let dropsArr_rusNameItem = drops.textContent.match(/[а-яА-Я].+(?=\])/g); // Создали регулярное выражение, которое будет во всем содержимом контейнера div производить поиск только имен кейсов и возвращать это в виде массива с именами всех кейсов
 let dropsArr_idItem = drops.textContent.match(/[0-9]{4}(?=\|)/g); // Создали регулярное выражение, которое будет во всем содержимом контейнера div производить поиск только уникальных айдишников кейсов и возвращать это в виде массива с айдишниками всех кейсов
@@ -113,12 +114,19 @@ table.append(tbody);
 
 for (let key in cases) { // Генерация ячеек таблицы и заполнение
     let trContent = document.createElement('tr');
+    if (cases[key]['price'] > 50) {
+        trContent.classList.add('max');
+    }
     tbody.append(trContent);
 
     let thName = document.createElement('th');
-    thName.innerHTML = cases[key]['ru_name'];
-    thName.classList.add('text-center');
     trContent.append(thName);
+    thName.classList.add('text-center');
+    let linksItem = document.createElement('a');
+    linksItem.innerHTML = cases[key]['ru_name'];
+    linksItem.href = template_link_item + cases[key]['eng_name'];
+    linksItem.target = 'blank';
+    thName.append(linksItem);
 
     let thQuantity = document.createElement('th');
     thQuantity.innerHTML = cases[key]['quantity'];
