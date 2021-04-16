@@ -6,17 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-    <style>
-        .preloader {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background-color: #2a2c3e;
-            z-index: 9999999999999;
-        }
-    </style>
     <link rel="stylesheet" href="style.css">
     <title>Рассчет прибыли с фарма</title>
 </head>
@@ -107,8 +96,6 @@
         "https://steamcommunity.com/76561198449647317".
         [14:06:29] Drop [4471|Кейс «Решающий момент»] arrived to 'token_ak225_1'. Profile link:
         "https://steamcommunity.com/76561198440658391".
-        [14:06:29] Drop [4003|Кейс операции «Браво»] arrived to 'token_ak269_0'. Profile link:
-        "https://steamcommunity.com/76561198450495904".
         [14:06:29] Drop [4548|Кейс «Запретная зона»] arrived to 'token_ak246_0'. Profile link:
         "https://steamcommunity.com/76561198440817035".
         [14:06:29] Drop [4598|Кейс «Призма»] arrived to 'token_ak275_0'. Profile link:
@@ -523,8 +510,6 @@
         "https://steamcommunity.com/76561198843120945".
         [00:50:50] Drop [4548|Кейс «Запретная зона»] arrived to 'token_ak306_a'. Profile link:
         "https://steamcommunity.com/76561198834227466".
-        [00:50:50] Drop [4001|Оружейный кейс CS:GO] arrived to 'token_ak328_a'. Profile link:
-        "https://steamcommunity.com/76561198843096456".
         [00:50:50] Drop [4695|Кейс «Призма 2»] arrived to 'token_ak310_b'. Profile link:
         "https://steamcommunity.com/76561198843324986".
         [00:50:50] Drop [4471|Кейс «Решающий момент»] arrived to 'token_ak331_a'. Profile link:
@@ -681,11 +666,54 @@
         "https://steamcommunity.com/76561198872455969".
     </div>
 
-    <div class="preloader d-flex justify-content-center align-items-center">
-        <div class="spinner-border text-info" style="width: 10rem; height: 10rem;" role="status">
-            <span class="visually-hidden">Loading...</span>
+    <div class="container general">
+        <div class="row">
+            <div class="col-md-12 text-center contant">
+                <h1>Данная программа предоставляет возможность рассчитывать статистику после фарма кейсов в игре CS GO
+                </h1>
+                <h2 class="mt-5">Существует два способа вывода рассчета:</h2>
+
+                <div class="row">
+                    <p class="buttons-collapse d-flex justify-content-around">
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button"
+                            aria-expanded="false" aria-controls="multiCollapseExample1">Способ №1</a>
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#multiCollapseExample2" aria-expanded="false"
+                            aria-controls="multiCollapseExample2">Способ №2</button>
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6 mt-5">
+                            <div class="collapse" id="multiCollapseExample1">
+                                <div class="card card-body">
+                                    <h3>Скопируйте ВСЕ содержимое с файла: дата_drops.txt. Далее откройте файл
+                                        index.html в любом редакторе кода. Затем, вставьте в div с классом drops все
+                                        содержимое
+                                        с файла дата_drops.txt. После чего нажмите на кнопку ниже и подождите немного до
+                                        тех пор пока статистика загрузится</h3>
+                                    <input type="submit" class="btn btn-primary drops_stat" value="Показать статистику">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-5">
+                            <div class="collapse" id="multiCollapseExample2">
+                                <div class="card card-body">
+                                    <h3>Нажмите на кнопочку "Выбрать файлы", далее выберите нужные файлы, которые
+                                        генерируются программой
+                                        после каждого фарма кейсов. Затем нажмите на кнопку "Показать статистику", после
+                                        подождите немного до тех пор пока статистика загрузится</h3>
+                                    <input type="file" multiple="true" class="btn btn-primary file_stat">
+                                    <input type="submit" class="btn btn-primary get_fileStats"
+                                        value="Показать статистику">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="drops_file"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous">
