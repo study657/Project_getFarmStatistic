@@ -20,9 +20,18 @@ body{
     }
 }
 
-.general{
+.main{
     .row{
         --bs-gutter-x: 0;
+
+        h4{
+            color: red;
+            font-weight: 900;
+
+            a{
+                text-decoration: none;
+            }
+        }
     }
 
     .contant{
@@ -82,6 +91,10 @@ body{
             text-shadow: 1px 1px 2px black;
         }
     }
+
+    .ru_name{
+        white-space: nowrap;
+    }
 }
 
 .gn{
@@ -106,7 +119,7 @@ body{
     background-color: #38e638;
 }
 
-.genPage{
+.mainPage{
     font-size: 20px;
     color: #002bff;
 }

@@ -1,25 +1,21 @@
 let drops_index = document.querySelector('.drops'); // Получили наш div из index.html с классом drops
-let drops_file = document.querySelector('.drops_file');
-let genContainer = document.querySelector('.container');
-let dropsStat = document.querySelector('.drops_stat');
-let fileStat = document.querySelector('.file_stat');
-let getFileStats = document.querySelector('.get_fileStats');
+let drops_file = document.querySelector('.drops_file'); // Получили наш div, который будет необходим для записи всего содержимого из подгруженного файла в этот div
+let mainBlock = document.querySelector('.main'); // Стартовая страница сайта
+let buttonGetStatFromIndex = document.querySelector('.drops_stat'); // Получаем кнопку, которая при нажатии отвечает за вывод статистики из div с классом drops
+let buttonAddFiles = document.querySelector('.file_stat'); // Получаем кнопочку, которая позволяет добавить файлы
+let getFileStats = document.querySelector('.get_fileStats'); // Получаем кнопочку, которая позволяет при нажатии вывести результат фарма, который загружен из файла
 
-dropsStat.addEventListener('click', function () { // При нажатии на кнопку идет рассчет статистики, которая была загружена вручную пользователем в файл index.html
+buttonGetStatFromIndex.addEventListener('click', function () { // При нажатии на кнопку идет рассчет статистики, которая была загружена вручную пользователем в файл index.html
     getStatistic(drops_index);
 });
 
-getFileStats.addEventListener('click', function () { // Кнопка, по нажатию на которую загружается статистика из фалов, которые были загружены извне
-    getStatistic(drops_file);
-});
+buttonAddFiles.addEventListener('change', function () { // Кнопка, по нажатию на которую мы получаем все содержимое загружаемых файлов и записываем их в общий div
+    let files = buttonAddFiles.files; // Получили массив с нашими файлами, которые загрузили
 
-fileStat.addEventListener('change', function () { // Кнопка, по нажатию на которую мы получаем все содержимое загружаемых файлов и записываем их в общий div
-    let file = fileStat.files; // Получили массив с нашими файлами, которые загрузили
-
-    for (let i = 0; i < file.length; i++) { // Прошлись по каждому файлу этого массива
+    for (let i = 0; i < files.length; i++) { // Прошлись по каждому файлу этого массива
         let reader = new FileReader(); // Создали объект для работы с файлами и последующим чтением их
 
-        reader.readAsText(file[i]); // С помощью этого метода получили текстовое содержимое каждого загруженного файла
+        reader.readAsText(files[i]); // С помощью этого метода получили текстовое содержимое каждого загруженного файла
 
         reader.addEventListener('load', function () { // Далее если файл был успешно загружен, то тогда записываем каждое содержимое нашего файла в нужный нам div
             drops_file.innerHTML += reader.result;
@@ -27,16 +23,22 @@ fileStat.addEventListener('change', function () { // Кнопка, по нажа
     }
 });
 
+getFileStats.addEventListener('click', function () { // Кнопка, по нажатию на которую загружается статистика из фалов, которые были загружены извне
+    getStatistic(drops_file);
+});
+
 
 function getStatistic(drops) { // Главная функция, которая целиком отвечает за рассчет таблицы и вывод профиля участников фарма
     if (drops.innerHTML !== '') { // Проверка на то, что массив с элементами не пустая строчка и есть вообще что считать
-        genContainer.style.display = 'none';
+        mainBlock.style.display = 'none';
         var actual_price_onBOTkeyTf2 = 132; // Актуальная цена на ключ из игры TF2 у бота в стиме
-        let template_link_item = 'https://steamcommunity.com/market/listings/730/'; // Ссылка на сам предмет на торговой площадке, необходимо только после / добавить название кейса на акнглийском
+        let template_link_item = 'https://steamcommunity.com/market/listings/730/'; // Ссылка на сам предмет на торговой площадке, необходимо только после / добавить название кейса на английском
         let dropsArr_rusNameItem = drops.textContent.match(/[а-яА-Я].+(?=\])/g); // Создали регулярное выражение, которое будет во всем содержимом контейнера div производить поиск только имен кейсов и возвращать это в виде массива с именами всех кейсов
         let dropsArr_idItem = drops.textContent.match(/[0-9]{4}(?=\|)/g); // Создали регулярное выражение, которое будет во всем содержимом контейнера div производить поиск только уникальных айдишников кейсов и возвращать это в виде массива с айдишниками всех кейсов
+        let accauntsArr_logins = drops.textContent.match(/[_A-Za-z0-9]{1,}(?=\')/g); // Создали регулярное выражение, которое ищет логины каждого аккаунта с нашего текущего фарма
 
         let cases = {}; // Создали пустой объект, для будущего заполнения, который предполагает вид: {'id': {ru_name: "", eng_name: "", quantity: 1, price: 1}, ...}
+        let cases_onLogins = {}; // Создали пустой объект, который в дальнейшем будет заполнен и будет иметь вид: {'Название кейса': [{'login': Логин аккаунта, 'quantity': Количество кейсов на аккаунте}, {}, {}]}
 
         for (let i = 0; i < dropsArr_idItem.length; i++) { // Проходимся по всем элементам, с айдишниками и далее если нет совпадения по id внутри объекта cases, тогда создаем такой ключ и в этом ключе объект, а если совпадение есть, то тогда к ключу quantity прибавляем 1
             if (cases[dropsArr_idItem[i]] == undefined) {
@@ -51,6 +53,37 @@ function getStatistic(drops) { // Главная функция, которая 
             }
         }
 
+        for (let i = 0; i < dropsArr_rusNameItem.length; i++) { // Проходимся по каждому элементу с русским названием кейсов
+            if (cases_onLogins[dropsArr_rusNameItem[i]] == undefined) { // Далее если в объекте нет ключа с русским названием, то создаем шаблон
+                cases_onLogins[dropsArr_rusNameItem[i]] = [{
+                    'login': accauntsArr_logins[i],
+                    'quantity': 1
+                }]
+            } else { // А если ключ в объекте с таким названием уже имеется, тогда
+                let check = cases_onLogins[dropsArr_rusNameItem[i]].some(function (object) { // Создаем проверяющий чекспот, задача которого пройтись по каждому массиву, который есть по определенному ключу
+                    if (object['login'] == accauntsArr_logins[i]) { // и если хотя бы для одного элемента с текущим логином будет хоть одно совпадение в нашем массиве, то тогда возвращаем true, это значит, что совпадение есть и нам необходимо делать дальнешие действия
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+
+                if (check) { // Делаем проверку по переменной чекспота, который сформировали выше
+                    for (let k = 0; k < cases_onLogins[dropsArr_rusNameItem[i]].length; k++) { // Снова проходимся по всем элементам с ключом по русскому названию кейсов
+                        if (cases_onLogins[dropsArr_rusNameItem[i]][k]['login'] == accauntsArr_logins[i]) { // Далее если имеется такой кейс и логин с ним и совпадение, то тогда добавляем +1 в параметр количества кейсов на данном логине и останавливаем цикл, т.к. смысла проходить по всем элементам просто нет
+                            cases_onLogins[dropsArr_rusNameItem[i]][k]['quantity']++;
+                            break;
+                        }
+                    }
+                } else { // В противном случае, если совпадений никаких по логину нет, то мы просто создаем новый объект в массиве исходя из нашего шаблона
+                    cases_onLogins[dropsArr_rusNameItem[i]].push({
+                        'login': accauntsArr_logins[i],
+                        'quantity': 1
+                    });
+                }
+            }
+        }
+
         var proxy = 'https://cors-anywhere.herokuapp.com/'; // FIX CORS policy: No 'Access-Control-Allow-Origin' Необходимо, чтобы обойти ошибку с сервером
         var steam_items = 'https://api.steampowered.com/IEconItems_730/GetSchema/v2/?key=2A88B4C4D2914C700C62D8D204415626&language=en'; // Данная ссылка ведет на сайт, на котором собственно находится сам объект со всеми вещами и предметами из игры
 
@@ -59,7 +92,7 @@ function getStatistic(drops) { // Главная функция, которая 
         xhr_steam_items.send(); // Отсылаем запрос
 
         if (xhr_steam_items.status != 200) { // Проверяем, что наш статус запроса равен 200, что соответсвует норме
-            console.log('Ошибка'); // Если получаем статус не 200, тогда выдаем ошибку
+            alert('Ошибка получения данных, попробуйте позднее!'); // Если получаем статус не 200, тогда выдаем ошибку
         } else {
             var resporse_steam_items = JSON.parse(xhr_steam_items.responseText)['result']['items']; // если получаем статус 200, что соответствует норме, в таком случае мы делаем парс всего того, что есть на сайте: https://api.steampowered.com/IEconItems_730/GetSchema/v2/?key=2A88B4C4D2914C700C62D8D204415626&language=en, и получаем весь объект с того сайта. Но весь нам не нужен, поэтому мы берем по ключу result и по ключу items и соответвтвенно все это парсим (превращаем) в json объект, а не в строку
         }
@@ -115,26 +148,19 @@ function getStatistic(drops) { // Главная функция, которая 
 
 
 
-        let table = document.createElement('table'); // Работа с html (создание блоков и их заполнение)
-        table.classList.add('table', 'table-bordered', 'border-info');
-        document.body.append(table);
-        let thead = document.createElement('thead');
-        thead.classList.add('border-3');
-        table.append(thead);
-        let tr = document.createElement('tr');
-        thead.append(tr);
+        let table = createNewElement('table', document.body, ['table', 'table-bordered', 'border-info']); // Работа с html (создание блоков и их заполнение) Создаем главную таблицу, в которую будем заполнять статистику по фарму
+        let thead = createNewElement('thead', table, ['border-3']);
+        let tr = createNewElement('tr', thead);
 
-        let namesCols = ['Наименование кейса', 'Кол-во кейсов', 'Статистика выпадения кейса', 'Цена в STEAM', 'Общее (по цене STEAM)', 'Общее (с учетом комиссии)', 'ЧП Бори(30%)', 'ЧП Насти(70%)'];
+        let namesCols = ['Наименование кейса', 'Кол-во кейсов', 'Статистика выпадения кейса', 'Цена в STEAM', 'Общее (по цене STEAM)', 'Общее (с учетом комиссии)', 'ЧП Бори(30%)', 'ЧП Насти(70%)']; // Создаем массив, в котором перечисляем все элементы, которые должны находиться в шапке таблицы
 
-        for (let i = 0; i < namesCols.length; i++) {
-            let th = document.createElement('th');
-            th.classList.add('text-center');
+        for (let i = 0; i < namesCols.length; i++) { // Длеаем цикл, который позволяет нам заполнить названия главных колонок
+            let th = createNewElement('th', tr, ['text-center']);
             th.innerHTML = namesCols[i];
-            tr.append(th);
         }
 
-        let tbody = document.createElement('tbody');
-        table.append(tbody);
+
+        let tbody = createNewElement('tbody', table); // Создали оболочку tbody для нашей будущей таблицы по выводу статистики дропа
 
         for (let key in cases) { // Генерация ячеек таблицы и заполнение
             let trContent = document.createElement('tr');
@@ -143,95 +169,155 @@ function getStatistic(drops) { // Главная функция, которая 
             }
             tbody.append(trContent);
 
-            let thName = document.createElement('th');
-            trContent.append(thName);
-            thName.classList.add('text-center');
-            let linksItem = document.createElement('a');
+
+            let thName = createNewElement('th', trContent, ['text-center', 'ru_name']); // Создаем колонку с названиями кейсов
+
+            let linksItem = createNewElement('a', thName); // Внутри колонки с названиями кейсов создаем ссылку с названием кейса, которая ведет на предмет в ТП стима
             linksItem.innerHTML = cases[key]['ru_name'];
             linksItem.href = template_link_item + cases[key]['eng_name'];
             linksItem.target = 'blank';
-            thName.append(linksItem);
 
-            let thQuantity = document.createElement('th');
+            let input_showAccaunts = createNewElement('input', thName, ['form-check-input'], 'flexCheckDefault'); // Создаем чекбокс, который при нажатии будет показывать аккаунты с данными кейсами
+            input_showAccaunts.type = 'checkbox';
+            input_showAccaunts.setAttribute('data-bs-toggle', 'tooltip');
+            input_showAccaunts.setAttribute('data-bs-placement', 'bottom');
+            input_showAccaunts.setAttribute('title', 'При нажатии на кнопочку Вы можете узнать на каких аккаунтах имеются данные кейсы');
+            let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')); // bootstrap фишка, которая позволяет показывать подсказки
+            tooltipTriggerList.map(function (tooltipTriggerEl) { // bootstrap фишка, которая позволяет показывать подсказки
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            input_showAccaunts.addEventListener('click', function () { // При клике на чекбокс делаем так, чтобы показывались аккаунты с этими кейсами
+                cases_onLogins[this.previousElementSibling.innerHTML].sort(function (a, b) { // Немного меняем наш изначальный объект с логинами аккаунтов, сортируя их по количеству. Причем сортировка идет от большего к меньшему
+                    if (a['quantity'] < b['quantity']) return 1;
+                    if (a['quantity'] == b['quantity']) return 0;
+                    if (a['quantity'] > b['quantity']) return -1;
+                });
+
+                let blockWithaccounts = profileDivContainer.querySelectorAll('.show_accounts'); // Получаем блок, в котором есть аккаунты и удаляем их, чтобы не было дублирования новых блоков при нажатии на кнопку
+                for (let i = 0; i < blockWithaccounts.length; i++) {
+                    blockWithaccounts[i].remove();
+                }
+
+                let checkboxes = tbody.querySelectorAll('.form-check-input'); // Получаем все наши чекбоксы, которые выводят блоки с аккаунтами, где лежат эти кейсы
+                for (let i = 0; i < checkboxes.length; i++) {
+                    if (this != checkboxes[i]) { // Если текущий чекбокс не равен проходящему, тогда удаляем с него класс show и делаем его не активным
+                        checkboxes[i].classList.remove('show');
+                        checkboxes[i].checked = false;
+                    }
+                }
+
+                this.classList.toggle('show');
+
+                if (this.classList.contains('show')) {
+                    let divRowForAccaunts = document.createElement('div'); // Создание аккордиона, чтобы в него поместить таблицу с нашими аккаунтами
+                    divRowForAccaunts.classList.add('row', 'show_accounts');
+                    goMainPage.before(divRowForAccaunts);
+
+                    let divColForDivRowForAccaunts = createNewElement('div', divRowForAccaunts, ['col-md-6', 'offset-3']);
+                    let accordion = createNewElement('div', divColForDivRowForAccaunts, ['accordion'], 'accordionExample');
+                    let accordionItem = createNewElement('div', accordion, ['accordion-item', 'mb-3']);
+                    let h2Accordion = createNewElement('h2', accordionItem, ['accordion-header'], 'headingTwo');
+
+                    let buttonAccordion = createNewElement('button', h2Accordion, ['accordion-button', 'collapsed']);
+                    buttonAccordion.setAttribute('type', 'button');
+                    buttonAccordion.setAttribute('data-bs-toggle', 'collapse');
+                    buttonAccordion.setAttribute('data-bs-target', '#collapseTwo');
+                    buttonAccordion.setAttribute('aria-expanded', 'false');
+                    buttonAccordion.setAttribute('aria-controls', 'collapseTwo');
+                    buttonAccordion.innerHTML = 'Показать аккаунты с предметом: ' + '"' + this.previousElementSibling.innerHTML + '"';
+
+                    let divAccordionCollapse = createNewElement('div', accordionItem, ['accordion-collapse', 'collapse'], 'collapseTwo');
+                    divAccordionCollapse.setAttribute('aria-labelledby', 'headingTwo');
+                    divAccordionCollapse.setAttribute('data-bs-parent', '#accordionExample');
+
+                    let accordionBody = createNewElement('div', divAccordionCollapse, ['accordion-body']);
+
+
+
+                    let tableForAccounts = createNewElement('table', accordionBody, ['table', 'table-dark', 'table-hover', 'table-bordered', 'text-center']); // Генерация самой таблицы внутри нашего аккордиона
+                    let theadForAccounts = createNewElement('thead', tableForAccounts);
+                    let trFortheadForAccounts = createNewElement('tr', theadForAccounts);
+
+                    let thFortrFortheadForAccounts1 = createNewElement('th', trFortheadForAccounts);
+                    thFortrFortheadForAccounts1.setAttribute('scope', 'col');
+                    thFortrFortheadForAccounts1.innerHTML = 'Логин аккаунта';
+
+                    let thFortrFortheadForAccounts2 = createNewElement('th', trFortheadForAccounts);
+                    thFortrFortheadForAccounts2.setAttribute('scope', 'col');
+                    thFortrFortheadForAccounts2.innerHTML = 'Количество';
+
+
+
+                    let tbody = createNewElement('tbody', tableForAccounts); // Создаем самую важную таблицу для аккаунтов
+
+                    for (let i = 0; i < cases_onLogins[this.previousElementSibling.innerHTML].length; i++) { // В самой важной таблицы заполняем ее создав в ней логины и количество кейсов
+                        let tr = createNewElement('tr', tbody);
+
+                        let td_login = createNewElement('td', tr);
+                        td_login.innerHTML = cases_onLogins[this.previousElementSibling.innerHTML][i]['login'];
+
+                        let td_quantity = createNewElement('td', tr);
+                        td_quantity.innerHTML = cases_onLogins[this.previousElementSibling.innerHTML][i]['quantity'];
+                    }
+                }
+            });
+
+
+
+            let thQuantity = createNewElement('th', trContent, ['text-center', 'cases']);
             thQuantity.innerHTML = cases[key]['quantity'];
-            thQuantity.classList.add('text-center', 'cases');
-            trContent.append(thQuantity);
 
-            let statisticCase = document.createElement('th');
+            let statisticCase = createNewElement('th', trContent, ['text-center']);
             statisticCase.innerHTML = ((100 * Number(thQuantity.innerHTML)) / getAllCases(cases)).toFixed(2) + '%';
-            statisticCase.classList.add('text-center');
-            trContent.append(statisticCase);
 
-            let thPrice = document.createElement('th');
+            let thPrice = createNewElement('th', trContent, ['text-center']);
             thPrice.innerHTML = cases[key]['price'] + ' руб.';
-            thPrice.classList.add('text-center');
-            trContent.append(thPrice);
 
-            let generalSteam = document.createElement('th');
-            generalSteam.innerHTML = (parseInt(thQuantity.innerHTML) * parseFloat(thPrice.innerHTML)).toFixed(2) + ' руб.';
-            generalSteam.classList.add('text-center');
-            trContent.append(generalSteam);
+            let totalPriceSteam = createNewElement('th', trContent, ['text-center']);
+            totalPriceSteam.innerHTML = (parseInt(thQuantity.innerHTML) * parseFloat(thPrice.innerHTML)).toFixed(2) + ' руб.';
 
-            let generalWithCommission = document.createElement('th');
-            generalWithCommission.innerHTML = ((parseFloat(thPrice.innerHTML) - (parseFloat(thPrice.innerHTML) * 0.15)) * parseInt(thQuantity.innerHTML)).toFixed(2) + ' руб.';
-            generalWithCommission.classList.add('text-center', 'com');
-            trContent.append(generalWithCommission);
+            let totalPriceWithComission = createNewElement('th', trContent, ['totalPriceWithComission']);
+            totalPriceWithComission.innerHTML = ((parseFloat(thPrice.innerHTML) - (parseFloat(thPrice.innerHTML) * 0.15)) * parseInt(thQuantity.innerHTML)).toFixed(2) + ' руб.';
 
-            let moneyBori = document.createElement('th');
-            moneyBori.innerHTML = (parseFloat(generalWithCommission.innerHTML) * 0.3).toFixed(2) + ' руб.';
-            moneyBori.classList.add('text-center', 'moneyBori');
-            trContent.append(moneyBori);
+            let moneyBori = createNewElement('th', trContent, ['text-center', 'moneyBori']);
+            moneyBori.innerHTML = (parseFloat(totalPriceWithComission.innerHTML) * 0.3).toFixed(2) + ' руб.';
 
-            let moneyNasty = document.createElement('th');
-            moneyNasty.innerHTML = (parseFloat(generalWithCommission.innerHTML) * 0.7).toFixed(2) + ' руб.';
-            moneyNasty.classList.add('text-center', 'moneyNasty');
-            trContent.append(moneyNasty);
+            let moneyNasty = createNewElement('th', trContent, ['text-center', 'moneyNasty']);
+            moneyNasty.innerHTML = (parseFloat(totalPriceWithComission.innerHTML) * 0.7).toFixed(2) + ' руб.';
         }
 
 
-        let moneyBoriArr = document.querySelectorAll('.moneyBori');
-        let moneyNastyArr = document.querySelectorAll('.moneyNasty');
 
-        let profileDivContainer = document.createElement('div');
-        profileDivContainer.classList.add('container', 'info');
-        document.body.append(profileDivContainer);
+        let moneyBoriArr = document.querySelectorAll('.moneyBori'); // Получаем все ячейки с ЧП Бори
+        let moneyNastyArr = document.querySelectorAll('.moneyNasty'); // Получаем все ячейки с ЧП Насти
 
-        let profileDivContainerDivRow = document.createElement('div');
-        profileDivContainerDivRow.classList.add('row');
-        profileDivContainer.append(profileDivContainerDivRow);
-
+        var profileDivContainer = createNewElement('div', document.body, ['container', 'info']); // Создаем основном div, в котором будут храниться профили участников фарма
+        let profileDivContainerDivRow = createNewElement('div', profileDivContainer, ['row']);
 
         profile(profileDivContainerDivRow, 'Борис', 'images/unknown0.png', moneyBoriArr);
         profile(profileDivContainerDivRow, 'Анастасия', 'images/fox 1.jpg', moneyNastyArr, 'offset-md-2');
 
 
-        let generalCase = document.createElement('p'); // Создаем строчку с общем кол-вом кейсов
-        generalCase.innerHTML = 'Итого общее количество кейсов: ' + getAllCases(cases);
-        generalCase.classList.add('gc', 'text-center', 'mt-5');
-        profileDivContainerDivRow.append(generalCase);
+        let totalCases = createNewElement('p', profileDivContainerDivRow, ['gc', 'text-center', 'mt-5']); // Создаем строчку с общем кол-вом кейсов
+        totalCases.innerHTML = 'Итого общее количество кейсов: ' + getAllCases(cases);
 
 
-        let totalProfitAll = document.querySelectorAll('.com'); // Создаем строчку с общей прибылью
-        let totalProfit = document.createElement('p');
+        let totalProfitAll = document.querySelectorAll('.totalPriceWithComission'); // Получаем массив элементов, в котором написана общая прибыль
+        let totalProfit = createNewElement('p', profileDivContainerDivRow, ['gc', 'text-center']); // Создаем строчку с общей прибылью
         totalProfit.innerHTML = 'Суммарно общая прибыль: ' + getSum(totalProfitAll) + ' руб.';
-        totalProfit.classList.add('gc', 'text-center');
-        profileDivContainerDivRow.append(totalProfit);
 
 
-        let goGenPage = document.createElement('button'); // Создаем строчку с кнопкой, для возврата на главную страницу
-        goGenPage.innerHTML = 'Вернуться на главную страницу';
-        goGenPage.classList.add('btn', 'btn-danger', 'text-center', 'genPage');
-        profileDivContainerDivRow.append(goGenPage);
+        var goMainPage = createNewElement('button', profileDivContainerDivRow, ['btn', 'btn-danger', 'text-center', 'mainPage']); // Создаем кнопку, для возврата на главную страницу
+        goMainPage.innerHTML = 'Вернуться на главную страницу';
 
-        goGenPage.addEventListener('click', function () { // При нажатии на кнопку возвращаемся в главное меню
+        goMainPage.addEventListener('click', function () { // При нажатии на кнопку возвращаемся в главное меню
             table.remove();
             profileDivContainer.remove();
-            genContainer.classList.remove('dropsStat_div');
-            genContainer.style.display = 'block';
+            mainBlock.style.display = 'block';
             drops_file.innerHTML = '';
-            fileStat.files = 0;
+            buttonAddFiles.value = '';
         });
-
 
 
 
@@ -254,44 +340,43 @@ function getStatistic(drops) { // Главная функция, которая 
             return sum;
         };
 
+        function createNewElement(selectorElem, parentElement, classNames = undefined, idValue = undefined) { // Функция, которая позволяет создать новый тег на страницу и добавить его в нужное место, при этом с добавлением нужных классов и id
+            let newElem = document.createElement(selectorElem);
+            if (classNames !== undefined) {
+                newElem.classList.add(...classNames);
+            }
+            if (idValue !== undefined) {
+                newElem.id = idValue;
+            }
+            parentElement.append(newElem);
+
+            return newElem;
+        };
+
         function profile(selector, name, photo, money, offset = undefined) { // Функция, для генерации профиля человека, участвующего в долевом фарме
-            let profile = document.createElement('div');
-            profile.classList.add('col-md-5', 'text-center', 'profile');
+            let profile = createNewElement('div', selector, ['col-md-5', 'text-center', 'profile']);
             if (offset !== undefined) {
                 profile.classList.add(offset);
             }
-            selector.append(profile);
 
-            let namePerson = document.createElement('h2');
+            let namePerson = createNewElement('h2', profile);
             namePerson.innerHTML = name;
-            profile.append(namePerson);
 
-            let photoPerson = document.createElement('img');
+            let photoPerson = createNewElement('img', profile, ['img-fluid']);
             photoPerson.src = photo;
-            photoPerson.classList.add('img-fluid');
-            profile.append(photoPerson);
 
-            let cleanMoney = document.createElement('p');
+            let cleanMoney = createNewElement('p', profile);
             cleanMoney.innerHTML = 'Чистая Прибыль: ' + getSum(money) + ' руб.';
-            profile.append(cleanMoney);
 
-            let genDiv = document.createElement('div');
-            genDiv.classList.add('block');
-            profile.append(genDiv);
+            let genDiv = createNewElement('div', profile, ['block']);
 
-            let span = document.createElement('span');
+            let span = createNewElement('span', genDiv);
             span.innerHTML = 'Рассчитать вывод в реальные деньги';
-            genDiv.append(span);
 
-            let div = document.createElement('div');
-            div.classList.add('form-check', 'form-switch');
-            genDiv.append(div);
+            let div = createNewElement('div', genDiv, ['form-check', 'form-switch']);
 
-            let input = document.createElement('input');
-            input.classList.add('form-check-input');
+            let input = createNewElement('input', div, ['form-check-input'], 'flexSwitchCheckDefault');
             input.type = 'checkbox';
-            input.id = 'flexSwitchCheckDefault';
-            div.append(input);
 
 
             let quantity_key_tf2 = Math.floor(Number(getSum(money)) / price_key_tf2); // Три строчки рассчета для вывода денег из стима
@@ -299,22 +384,17 @@ function getStatistic(drops) { // Главная функция, которая 
             let remains_moneyOnSteam = (Number(getSum(money)) - (quantity_key_tf2 * price_key_tf2)).toFixed(2);
 
 
-            let real_moneyDiv = document.createElement('div');
-            real_moneyDiv.classList.add('real_money');
+            let real_moneyDiv = createNewElement('div', profile, ['real_money']); // Для подсчета вывода виртуально полученных денег из игры в реальные
             real_moneyDiv.style.display = 'none';
-            profile.append(real_moneyDiv);
 
-            let real_moneyH3 = document.createElement('h3');
+            let real_moneyH3 = createNewElement('h3', real_moneyDiv);
             real_moneyH3.innerHTML = 'Qiwi Wallet: ' + conclusion_real_money + ' руб.';
-            real_moneyDiv.append(real_moneyH3);
 
-            let real_moneyH4 = document.createElement('h4');
+            let real_moneyH4 = createNewElement('h4', real_moneyDiv);
             real_moneyH4.innerHTML = 'Остаток денег на балансе STEAM после вывода: ' + remains_moneyOnSteam + ' руб.';
-            real_moneyDiv.append(real_moneyH4);
 
-            let real_moneyP = document.createElement('p');
+            let real_moneyP = createNewElement('p', real_moneyDiv);
             real_moneyP.innerHTML = '*Вывод происходится с помощью бота по продаже ключей из игры Team Fortes 2. Цена ключа на данный момент составляет ' + actual_price_onBOTkeyTf2 + ' рубля/штука';
-            real_moneyDiv.append(real_moneyP);
 
             input.addEventListener('click', function () { // Логика переключателя. Если включен, то будет выводить информацию о выводе денег в реал, если выключен, то не будет
                 this.classList.toggle('active');
