@@ -1,5 +1,8 @@
 let drops_index = document.querySelector('.drops'); // Получили наш div из index.html с классом drops
 let drops_file = document.querySelector('.drops_file'); // Получили наш div, который будет необходим для записи всего содержимого из подгруженного файла в этот div
+let login_pass = document.querySelector('.login_pass'); // Получаем div, в который потом запишутся все имеющиеся аккаунты в формате логин:пароль
+let arrowUp = document.querySelector('.arrow-up'); // Стрелочка для того, чтобы быстро проскочить вверх
+let arrowBottom = document.querySelector('.arrow-bottom'); // Стрелочка для того, чтобы быстро проскочить вниз
 let mainBlock = document.querySelector('.main'); // Стартовая страница сайта
 let buttonGetStatFromIndex = document.querySelector('.drops_stat'); // Получаем кнопку, которая при нажатии отвечает за вывод статистики из div с классом drops
 let buttonAddFiles = document.querySelector('.file_stat'); // Получаем кнопочку, которая позволяет добавить файлы
@@ -188,6 +191,7 @@ function getStatistic(drops) { // Главная функция, которая 
             });
 
             input_showAccaunts.addEventListener('click', function () { // При клике на чекбокс делаем так, чтобы показывались аккаунты с этими кейсами
+                let self = this.previousElementSibling.innerHTML;
                 cases_onLogins[this.previousElementSibling.innerHTML].sort(function (a, b) { // Немного меняем наш изначальный объект с логинами аккаунтов, сортируя их по количеству. Причем сортировка идет от большего к меньшему
                     if (a['quantity'] < b['quantity']) return 1;
                     if (a['quantity'] == b['quantity']) return 0;
@@ -197,6 +201,9 @@ function getStatistic(drops) { // Главная функция, которая 
                 let blockWithaccounts = profileDivContainer.querySelectorAll('.show_accounts'); // Получаем блок, в котором есть аккаунты и удаляем их, чтобы не было дублирования новых блоков при нажатии на кнопку
                 for (let i = 0; i < blockWithaccounts.length; i++) {
                     blockWithaccounts[i].remove();
+                    login_pass.innerHTML = '';
+                    arrowUp.style.display = 'none';
+                    arrowBottom.style.display = 'none';
                 }
 
                 let checkboxes = tbody.querySelectorAll('.form-check-input'); // Получаем все наши чекбоксы, которые выводят блоки с аккаунтами, где лежат эти кейсы
@@ -210,6 +217,8 @@ function getStatistic(drops) { // Главная функция, которая 
                 this.classList.toggle('show');
 
                 if (this.classList.contains('show')) {
+                    arrowUp.style.display = 'inline-block';
+                    arrowBottom.style.display = 'inline-block';
                     let divRowForAccaunts = document.createElement('div'); // Создание аккордиона, чтобы в него поместить таблицу с нашими аккаунтами
                     divRowForAccaunts.classList.add('row', 'show_accounts');
                     goMainPage.before(divRowForAccaunts);
@@ -260,6 +269,65 @@ function getStatistic(drops) { // Главная функция, которая 
                         let td_quantity = createNewElement('td', tr);
                         td_quantity.innerHTML = cases_onLogins[this.previousElementSibling.innerHTML][i]['quantity'];
                     }
+
+
+
+
+                    let infoGetPassForAcs = createNewElement('h4', accordionBody, ['text-center', 'mb-3']); // Создаем тег h4 с текстом информации о том, как использовать сервервис по подгрузке пароля к логину аккаунта
+                    infoGetPassForAcs.innerHTML = 'Вы можете получить аккаунты с данными кейсами в формате логин:пароль, но для этого Вам необходимо загрузить общий файл со всеми аккаунтами и после чего нажать на кнопку "Показать пароли"';
+
+                    let wrapDivForButtons = createNewElement('div', accordionBody, ['mt-2', 'd-flex', 'justify-content-around']); // Создаем обертку для наших будущих кнопочек
+
+                    let getAccounts = createNewElement('input', wrapDivForButtons, ['btn', 'btn-primary', 'file_accounts']); // Создаем кнопочку, которая получает наш загруженный файл
+                    getAccounts.type = 'file';
+
+                    let getPassForAccounts = createNewElement('input', wrapDivForButtons, ['btn', 'btn-primary', 'get_pass']); // Создаем кнопку, которая позволяет при нажатии показать все пароли к логинам аккаунтов
+                    getPassForAccounts.type = 'submit';
+                    getPassForAccounts.value = 'Показать пароли';
+
+                    getAccounts.addEventListener('change', function () { // Получаем наш файл, считываем его и записываем все содержимое файла в div с классом login_pass
+                        let file = getAccounts.files[0];
+
+                        let read = new FileReader();
+
+                        read.readAsText(file);
+
+                        read.addEventListener('load', function () {
+                            login_pass.innerHTML = read.result;
+                        });
+                    });
+
+                    getPassForAccounts.addEventListener('click', function () { // Вешаем на нашу кнопочку событие, которое при нажатии позволяет показать нам все аккаунты с данными кейсами в формате логин:пароль
+                        let logins = login_pass.textContent.match(/[A-Za-z0-9]{1,}(?=\:)/g); // Считываем все логины с подгружаемого файла
+                        let pass = login_pass.textContent.match(/\:[A-Za-z0-9]{1,}/g); // Считываем все пароли с подгружаемого файла
+                        let wrapperDivForAccounts = createNewElement('div', accordionBody, ['wrapper-for-accounts', 'mt-3']); // Создаем оболочный див, в который запишем все наши аккаунты
+
+                        let obj = { // Создаем пустой объект, в который потом запишем все наши аккаунты в нужном нам виде
+                            'Аккаунты': []
+                        };
+
+                        for (let i = 0; i < logins.length; i++) { // Проходим по всем полученным аккаунтам из файла и добавляем в массив объект вида ниже
+                            obj['Аккаунты'].push({
+                                'login': logins[i],
+                                'pass': pass[i]
+                            })
+                        }
+
+
+                        for (let i = 0; i < cases_onLogins[self].length; i++) { // Пробегаемся по всем нашим аккаунтам, которые имеют данный кейс
+                            let elemForAccountsWithPass = createNewElement('div', wrapperDivForAccounts, ['text-center']); // Создаем нужное кол-во тегов, чтобы затем в него поместить наши новые аккаунты уже с паролем
+
+                            let needAccountsWithPass = obj['Аккаунты'].filter(function (object) { // Проходимя фильтром по всем абсолютно полученным из файла аккаунтам, после чего если есть совпадение с текущим аккаунтом, то получаем этот объект
+                                if (object['login'] == cases_onLogins[self][i]['login']) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            });
+
+                            elemForAccountsWithPass.innerHTML = needAccountsWithPass[0]['login'] + needAccountsWithPass[0]['pass']; // Записываем полученные данные в наш div в формате логин:пароль
+                        }
+                    });
                 }
             });
 
@@ -308,7 +376,7 @@ function getStatistic(drops) { // Главная функция, которая 
         totalProfit.innerHTML = 'Суммарно общая прибыль: ' + getSum(totalProfitAll) + ' руб.';
 
 
-        var goMainPage = createNewElement('button', profileDivContainerDivRow, ['btn', 'btn-danger', 'text-center', 'mainPage']); // Создаем кнопку, для возврата на главную страницу
+        var goMainPage = createNewElement('button', profileDivContainerDivRow, ['btn', 'btn-danger', 'text-center', 'mainPage'], 'bottom'); // Создаем кнопку, для возврата на главную страницу
         goMainPage.innerHTML = 'Вернуться на главную страницу';
 
         goMainPage.addEventListener('click', function () { // При нажатии на кнопку возвращаемся в главное меню
@@ -317,6 +385,8 @@ function getStatistic(drops) { // Главная функция, которая 
             mainBlock.style.display = 'block';
             drops_file.innerHTML = '';
             buttonAddFiles.value = '';
+            arrowUp.style.display = 'none';
+            arrowBottom.style.display = 'none';
         });
 
 

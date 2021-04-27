@@ -2,12 +2,34 @@ body {
   background-color: #e6e0d2;
 }
 
-.drops {
+body .drops {
   display: none;
 }
 
-.drops_file {
+body .drops_file {
   display: none;
+}
+
+body .login_pass {
+  display: none;
+}
+
+body .arrow-up {
+  display: none;
+  background: url("images/up-arrow.svg") center center/contain no-repeat;
+  padding: 30px;
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+}
+
+body .arrow-bottom {
+  display: none;
+  background: url("images/down-arrow.svg") center center/contain no-repeat;
+  padding: 30px;
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
 }
 
 .card {
@@ -173,5 +195,11 @@ body {
   color: #e6b838;
   width: 80%;
   margin: 0 auto;
+}
+
+.accordion-body .wrapper-for-accounts div {
+  color: green;
+  font-size: 17px;
+  font-weight: 400;
 }
 /*# sourceMappingURL=style.css.map */

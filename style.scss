@@ -1,13 +1,35 @@
-body{
+body {
     background-color: #e6e0d2;
-}
 
-.drops{
-    display: none;
-}
+    .drops {
+        display: none;
+    }
 
-.drops_file{
-    display: none;
+    .drops_file {
+        display: none;
+    }
+
+    .login_pass {
+        display: none;
+    }
+
+    .arrow-up {
+        display: none;
+        background: url('images/up-arrow.svg') center center/contain no-repeat;
+        padding: 30px;
+        position: fixed;
+        bottom: 5px;
+        right: 5px;
+    }
+
+    .arrow-bottom {
+        display: none;
+        background: url('images/down-arrow.svg') center center/contain no-repeat;
+        padding: 30px;
+        position: fixed;
+        bottom: 5px;
+        left: 5px;
+    }
 }
 
 .card {
@@ -15,57 +37,57 @@ body{
     background-color: #bdaebd9e;
     transition: 1s all;
 
-    &:hover{
-        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    &:hover {
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     }
 }
 
-.main{
-    .row{
+.main {
+    .row {
         --bs-gutter-x: 0;
 
-        h4{
+        h4 {
             color: red;
             font-weight: 900;
 
-            a{
+            a {
                 text-decoration: none;
             }
         }
     }
 
-    .contant{
-        h1{
+    .contant {
+        h1 {
             margin-top: 20px;
             color: #060606;
         }
 
-        h2{
+        h2 {
             color: #060606;
             margin-bottom: 30px;
         }
 
-        .file_stat{
+        .file_stat {
             text-align-last: center;
         }
 
-        .buttons-collapse{
-            .btn-primary{
+        .buttons-collapse {
+            .btn-primary {
                 width: 30%;
 
-                &:focus{
+                &:focus {
                     box-shadow: none;
                 }
             }
         }
 
-        .collapse{
-            h3{
+        .collapse {
+            h3 {
                 color: #000000;
                 height: 300px;
             }
 
-            .btn-primary{
+            .btn-primary {
                 width: 70%;
                 margin: 3px auto;
             }
@@ -73,109 +95,120 @@ body{
     }
 }
 
-.table{
-    thead{
-        tr{
-            th{
+.table {
+    thead {
+        tr {
+            th {
                 font-size: 22px;
             }
         }
     }
 
-    a{
+    a {
         text-decoration: none;
         transition: 1s all;
 
-        &:hover{
+        &:hover {
             color: #dc0606;
             text-shadow: 1px 1px 2px black;
         }
     }
 
-    .ru_name{
+    .ru_name {
         white-space: nowrap;
     }
 }
 
-.gn{
+.gn {
     color: #ff0cec;
     font-size: 25px;
     font-weight: 800;
 }
 
-.gb{
-    color: #211ef1;;
+.gb {
+    color: #211ef1;
+    ;
     font-size: 25px;
     font-weight: 800;
 }
 
-.gc{
+.gc {
     color: red;
     font-size: 25px;
     font-weight: 800;
 }
 
-.max{
+.max {
     background-color: #38e638;
 }
 
-.mainPage{
+.mainPage {
     font-size: 20px;
     color: #002bff;
 }
 
 
-.profile{
+.profile {
     border: 2px solid;
     background-color: gray;
     border-radius: 70px;
 
-    h2{
+    h2 {
         font-size: 25px;
         font-weight: 900;
         color: #921442;
     }
 
-    img{
+    img {
         border-radius: 175px;
         margin-bottom: 20px;
         height: 250px;
     }
 
-    p{
+    p {
         font-size: 20px;
         color: #38e638;
     }
 
-    .block{
+    .block {
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
 
-        span{
+        span {
             color: blue;
             font-size: 20px;
         }
     }
 
-    .real_money{
+    .real_money {
         margin-bottom: 20px;
-        
-        h3{
+
+        h3 {
             color: #5b38e6;
         }
 
-        h4{
+        h4 {
             color: #5b38e6;
             font-size: 15px;
         }
 
-        p{
+        p {
             font-size: 12px;
             color: #e6b838;
             width: 80%;
             margin: 0 auto;
+        }
+    }
+}
+
+.accordion-body {
+    .wrapper-for-accounts {
+        div {
+            color: green;
+            font-size: 17px;
+            font-weight: 400;
         }
     }
 }
